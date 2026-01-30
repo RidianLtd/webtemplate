@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/**
+ * Design Tokens
+ * Define CSS custom properties for theming.
+ * Customize these values to match your brand identity.
+ */
+:root {
+  /* Primary brand color - customize per brand */
+  --color-primary: #3B82F6;
+
+  /* Background colors */
+  --color-background: #0F172A;
+  --color-surface: #1E293B;
+
+  /* Text colors */
+  --color-text: #F8FAFC;
+  --color-text-muted: #94A3B8;
+
+  /* Border colors */
+  --color-border: #334155;
+}
+
+/**
+ * Tailwind CSS 4 Theme Configuration
+ * Maps CSS variables to Tailwind utility classes.
+ */
+@theme {
+  /* Colors mapped from CSS variables */
+  --color-primary: var(--color-primary);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+
+  /* Font families */
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Inter', sans-serif;
+}
+
+/**
+ * Base Styles
+ * Applied globally to all pages.
+ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/**
+ * Typography Base
+ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

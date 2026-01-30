@@ -1,0 +1,31 @@
+---
+/**
+ * Footer.astro - Site footer
+ * Displays copyright text and optional tagline
+ */
+import fs from 'node:fs'
+import path from 'node:path'
+
+// Read settings for tagline
+const settings = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), 'src/content/settings/general.json'),
+    'utf-8'
+  )
+)
+
+const currentYear = new Date().getFullYear()
+---
+
+<footer class="border-t border-border py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-6xl mx-auto text-center">
+    {settings.tagline && (
+      <p class="text-text-muted mb-3 text-sm sm:text-base">
+        {settings.tagline}
+      </p>
+    )}
+    <p class="text-text-muted/70 text-sm">
+      &copy; {currentYear} {settings.site_title}. All rights reserved.
+    </p>
+  </div>
+</footer>

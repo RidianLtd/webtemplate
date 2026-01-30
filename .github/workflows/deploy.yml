@@ -1,0 +1,45 @@
+# GitHub Actions workflow for deploying to Cloudflare Pages
+#
+# Required Secrets (set in repository Settings > Secrets and variables > Actions):
+# - CLOUDFLARE_API_TOKEN: API token with Cloudflare Pages edit permissions
+# - CLOUDFLARE_ACCOUNT_ID: Your Cloudflare account ID
+#
+# Setup Instructions:
+# 1. Create a Cloudflare API token at https://dash.cloudflare.com/profile/api-tokens
+#    - Use the "Edit Cloudflare Workers" template or create custom with Pages permissions
+# 2. Find your Account ID in the Cloudflare dashboard URL or Workers/Pages overview
+# 3. Replace "your-project-name" below with your Cloudflare Pages project name
+# 4. Add both secrets to your GitHub repository
+
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=your-project-name

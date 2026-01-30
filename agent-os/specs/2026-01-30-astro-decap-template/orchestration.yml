@@ -1,0 +1,22 @@
+task_groups:
+  - name: Astro Project Setup and Configuration
+    claude_code_subagent: foundation-setup
+    standards:
+      - global/*
+  - name: Decap CMS Configuration
+    claude_code_subagent: cms-config
+    standards:
+      - global/*
+  - name: Homepage and Dynamic Pages
+    claude_code_subagent: frontend-pages
+    standards:
+      - global/*
+      - frontend/*
+  - name: OAuth Worker and Deployment
+    claude_code_subagent: infra-deploy
+    standards:
+      - global/*
+  - name: Documentation
+    claude_code_subagent: docs-writer
+    standards:
+      - all

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Content Manager</title>
+    <style>
+      /* CMS Login Page Styling - Customize via CSS variables */
+      :root {
+        --cms-bg: #0f172a;
+        --cms-text: #f8fafc;
+        --cms-primary: #3b82f6;
+        --cms-primary-hover: #60a5fa;
+      }
+
+      /* Hide Decap logo on login page */
+      [class*="AuthenticationPage"] img,
+      [class*="AuthenticationPage"] svg:not(button svg) {
+        display: none !important;
+      }
+
+      /* Login page dark background */
+      [class*="AuthenticationPage"] {
+        background: var(--cms-bg) !important;
+      }
+
+      /* Site title on login */
+      [class*="AuthenticationPage"]::before {
+        content: "CONTENT MANAGER";
+        display: block;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 32px;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        color: var(--cms-text);
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      /* Style the login button */
+      [class*="AuthenticationPage"] [class*="LoginButton"] {
+        background: var(--cms-primary) !important;
+        color: var(--cms-text) !important;
+        border: none !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        transition: box-shadow 0.2s ease !important;
+      }
+
+      [class*="AuthenticationPage"] [class*="LoginButton"]:hover {
+        background: var(--cms-primary-hover) !important;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  </body>
+</html>

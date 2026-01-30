@@ -1,0 +1,88 @@
+# Decap CMS Configuration
+# https://decapcms.org/docs/configuration-options/
+
+backend:
+  name: github
+  repo: YOUR_USERNAME/YOUR_REPO
+  branch: main
+  base_url: https://YOUR_OAUTH_WORKER.workers.dev
+  auth_endpoint: /auth
+
+# Enable local backend for development mode
+# Run `npx decap-server` in a separate terminal to use local backend
+local_backend: true
+
+# Media file configuration
+media_folder: public/uploads
+public_folder: /uploads
+
+# Collections
+collections:
+  # Site Settings - file-based, single JSON
+  - name: settings
+    label: Site Settings
+    files:
+      - name: general
+        label: General Settings
+        file: src/content/settings/general.json
+        fields:
+          - { name: site_title, label: Site Title, widget: string, default: "My Website" }
+          - { name: tagline, label: Tagline, widget: string, default: "A modern website template" }
+          - { name: default_description, label: Default Meta Description, widget: text, default: "A website built with Astro, Decap CMS, and Cloudflare Pages." }
+
+  # Homepage Content - file-based, single JSON
+  - name: homepage
+    label: Homepage
+    files:
+      - name: content
+        label: Homepage Content
+        file: src/content/homepage/content.json
+        fields:
+          # Hero Section
+          - name: hero
+            label: Hero Section
+            widget: object
+            fields:
+              - { name: headline, label: Headline, widget: string }
+              - { name: subheadline, label: Subheadline, widget: text }
+              - { name: cta_text, label: CTA Button Text, widget: string }
+              - { name: cta_link, label: CTA Button Link, widget: string }
+
+          # Features Section
+          - name: features
+            label: Features
+            label_singular: Feature
+            widget: list
+            min: 1
+            max: 6
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: description, label: Description, widget: text }
+              - { name: icon, label: Icon (emoji or text), widget: string, required: false, hint: "Optional: Enter an emoji or icon text" }
+
+          # Call-to-Action Section
+          - name: cta
+            label: Call-to-Action Section
+            widget: object
+            fields:
+              - { name: heading, label: Heading, widget: string }
+              - { name: description, label: Description, widget: text }
+              - { name: button_text, label: Button Text, widget: string }
+              - { name: button_link, label: Button Link, widget: string }
+
+  # Dynamic Pages - folder-based, multiple markdown files
+  - name: pages
+    label: Pages
+    label_singular: Page
+    folder: src/content/pages
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: slug, label: URL Slug, widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'Must be lowercase with hyphens only (e.g. about-us)'] }
+      - { name: tagline, label: Tagline, widget: string, hint: "Short description shown below the title" }
+      - { name: body, label: Content, widget: markdown }
+      - { name: cta_text, label: CTA Button Text, widget: string, required: false, default: "Get in touch" }
+      - { name: cta_email, label: CTA Email, widget: string, required: false, default: "contact@example.com" }

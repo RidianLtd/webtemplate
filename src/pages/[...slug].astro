@@ -1,0 +1,227 @@
+---
+/**
+ * Dynamic page template for CMS-managed pages
+ * Renders markdown content with generic styling
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/Header.astro'
+import Footer from '@/components/Footer.astro'
+import { marked } from 'marked'
+import fs from 'node:fs'
+import path from 'node:path'
+
+export async function getStaticPaths() {
+  // Read all markdown files from content/pages using fs.readdirSync
+  // Note: import.meta.glob does not work inside getStaticPaths()
+  const pagesDir = path.join(process.cwd(), 'src/content/pages')
+  const files = fs.readdirSync(pagesDir).filter((f) => f.endsWith('.md'))
+
+  const pages = files
+    .map((file) => {
+      const raw = fs.readFileSync(path.join(pagesDir, file), 'utf-8')
+
+      // Parse frontmatter with regex
+      const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
+      const match = raw.match(frontmatterRegex)
+
+      if (!match) return null
+
+      const frontmatterStr = match[1]
+      const content = match[2]
+
+      // Parse YAML frontmatter (simple key: value parsing)
+      const frontmatter: Record<string, string> = {}
+      frontmatterStr.split('\n').forEach((line) => {
+        const colonIndex = line.indexOf(':')
+        if (colonIndex > 0) {
+          const key = line.slice(0, colonIndex).trim()
+          const value = line.slice(colonIndex + 1).trim()
+          frontmatter[key] = value
+        }
+      })
+
+      return {
+        slug: frontmatter.slug,
+        title: frontmatter.title,
+        tagline: frontmatter.tagline || '',
+        cta_text: frontmatter.cta_text || '',
+        cta_email: frontmatter.cta_email || '',
+        content: content,
+      }
+    })
+    .filter(Boolean) as Array<{
+    slug: string
+    title: string
+    tagline: string
+    cta_text: string
+    cta_email: string
+    content: string
+  }>
+
+  return pages.map((page) => ({
+    params: { slug: page.slug },
+    props: page,
+  }))
+}
+
+interface Props {
+  slug: string
+  title: string
+  tagline: string
+  cta_text: string
+  cta_email: string
+  content: string
+}
+
+const page = Astro.props as Props
+
+// Convert markdown to HTML
+const htmlContent = await marked(page.content)
+---
+
+<BaseLayout title={page.title}>
+  <Header />
+
+  <main class="min-h-screen px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+    <article class="max-w-3xl mx-auto">
+      <!-- Page Header -->
+      <header class="mb-10 sm:mb-12 text-center">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-text mb-4">
+          {page.title}
+        </h1>
+        {page.tagline && (
+          <p class="text-lg sm:text-xl text-text-muted max-w-2xl mx-auto">
+            {page.tagline}
+          </p>
+        )}
+      </header>
+
+      <!-- Markdown Content -->
+      <div class="prose-content p-6 sm:p-10 bg-surface border border-border">
+        <Fragment set:html={htmlContent} />
+      </div>
+
+      <!-- CTA Section (if cta_text and cta_email are present) -->
+      {page.cta_text && page.cta_email && (
+        <div class="mt-10 sm:mt-12 text-center">
+          <a
+            href={`mailto:${page.cta_email}`}
+            class="inline-block bg-primary text-background px-8 py-4 font-semibold text-lg transition-all duration-200 hover:opacity-90 hover:translate-y-[-2px]"
+          >
+            {page.cta_text}
+          </a>
+        </div>
+      )}
+
+      <!-- Back Link -->
+      <div class="mt-10 sm:mt-12 text-center">
+        <a
+          href="/"
+          class="text-text-muted hover:text-primary transition-colors underline underline-offset-4"
+        >
+          &larr; Back to home
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Prose styling for markdown content using CSS custom properties */
+  .prose-content :global(h2) {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose-content :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose-content :global(h3) {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose-content :global(p) {
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+
+  .prose-content :global(ul) {
+    margin: 1rem 0;
+    padding-left: 0;
+  }
+
+  .prose-content :global(li) {
+    color: var(--color-text-muted);
+    padding-left: 1.5rem;
+    position: relative;
+    list-style: none;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose-content :global(li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.625rem;
+    height: 0.375rem;
+    width: 0.375rem;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+  }
+
+  .prose-content :global(strong) {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .prose-content :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: opacity 0.2s;
+  }
+
+  .prose-content :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  .prose-content :global(blockquote) {
+    border-left: 4px solid var(--color-primary);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .prose-content :global(code) {
+    background-color: var(--color-background);
+    padding: 0.125rem 0.375rem;
+    font-size: 0.875rem;
+    font-family: monospace;
+    color: var(--color-primary);
+  }
+
+  .prose-content :global(pre) {
+    background-color: var(--color-background);
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+  }
+
+  .prose-content :global(pre code) {
+    background-color: transparent;
+    padding: 0;
+  }
+</style>

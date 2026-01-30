@@ -1,0 +1,53 @@
+---
+/**
+ * Header.astro - Site header with navigation
+ * Displays site title/logo and navigation links
+ */
+import fs from 'node:fs'
+import path from 'node:path'
+
+// Read settings for site title
+const settings = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), 'src/content/settings/general.json'),
+    'utf-8'
+  )
+)
+
+// Navigation items (hardcoded initially - can be made dynamic via CMS)
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+]
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 sm:h-20">
+      <!-- Site Title / Logo -->
+      <a
+        href="/"
+        class="text-lg sm:text-xl font-bold text-text hover:text-primary transition-colors"
+      >
+        {settings.site_title}
+      </a>
+
+      <!-- Navigation Links -->
+      <ul class="flex items-center gap-6 sm:gap-8">
+        {navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="text-sm sm:text-base text-text-muted hover:text-text transition-colors"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<!-- Spacer to account for fixed header -->
+<div class="h-16 sm:h-20"></div>

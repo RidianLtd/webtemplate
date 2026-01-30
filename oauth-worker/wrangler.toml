@@ -1,0 +1,19 @@
+# Cloudflare Worker configuration for GitHub OAuth proxy
+#
+# Setup Instructions:
+# 1. Replace "your-project-oauth" with your desired worker name
+# 2. Replace "YOUR_CLIENT_ID" with your GitHub OAuth App client ID
+# 3. Set the client secret using: wrangler secret put GITHUB_CLIENT_SECRET
+#    (Never commit the secret to version control)
+#
+# Deploy with: cd oauth-worker && wrangler deploy
+
+name = "your-project-oauth"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+GITHUB_CLIENT_ID = "YOUR_CLIENT_ID"
+
+# Note: GITHUB_CLIENT_SECRET must be set via `wrangler secret put GITHUB_CLIENT_SECRET`
+# This ensures the secret is stored securely and never committed to version control.

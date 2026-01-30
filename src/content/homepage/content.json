@@ -1,0 +1,31 @@
+{
+  "hero": {
+    "headline": "Welcome to Your New Website",
+    "subheadline": "A modern, fast, and fully customizable website template built with Astro and powered by Decap CMS.",
+    "cta_text": "Get Started",
+    "cta_link": "/about"
+  },
+  "features": [
+    {
+      "title": "Lightning Fast",
+      "description": "Built with Astro for optimal performance. Zero JavaScript by default means your site loads instantly.",
+      "icon": "lightning"
+    },
+    {
+      "title": "Easy Content Management",
+      "description": "Decap CMS provides a friendly editing interface. Update your content without touching code.",
+      "icon": "pencil"
+    },
+    {
+      "title": "Fully Customizable",
+      "description": "CSS variables and Tailwind make it simple to match your brand. Change colors and styles in minutes.",
+      "icon": "palette"
+    }
+  ],
+  "cta": {
+    "heading": "Ready to Get Started?",
+    "description": "Clone this template and have your site live in under an hour. Full documentation included.",
+    "button_text": "Learn More",
+    "button_link": "/about"
+  }
+}
