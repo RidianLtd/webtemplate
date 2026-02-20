@@ -6,6 +6,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Header from '@/components/Header.astro'
 import Footer from '@/components/Footer.astro'
+import { renderInlineMarkdown } from '@/utils/markdown'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -41,7 +42,7 @@ function getIconPath(icon: string): string {
 <BaseLayout title={settings.site_title} description={settings.default_description}>
   <Header />
 
-  <main>
+  <main id="main-content">
     <!-- Hero Section -->
     <section class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
@@ -83,8 +84,7 @@ function getIconPath(icon: string): string {
               <h3 class="text-xl font-semibold text-text mb-3">
                 {feature.title}
               </h3>
-              <p class="text-text-muted leading-relaxed">
-                {feature.description}
+              <p class="text-text-muted leading-relaxed" set:html={renderInlineMarkdown(feature.description)}>
               </p>
             </div>
           ))}
@@ -99,8 +99,7 @@ function getIconPath(icon: string): string {
           <h2 class="text-3xl sm:text-4xl font-bold text-text mb-4">
             {cta.heading}
           </h2>
-          <p class="text-lg text-text-muted mb-8 max-w-xl mx-auto">
-            {cta.description}
+          <p class="text-lg text-text-muted mb-8 max-w-xl mx-auto" set:html={renderInlineMarkdown(cta.description)}>
           </p>
           <a
             href={cta.button_link}

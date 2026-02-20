@@ -1,12 +1,12 @@
 ---
 /**
  * Footer.astro - Site footer
- * Displays copyright text and optional tagline
+ * Displays copyright text, social links, contact email, and optional tagline
  */
 import fs from 'node:fs'
 import path from 'node:path'
 
-// Read settings for tagline
+// Read settings
 const settings = JSON.parse(
   fs.readFileSync(
     path.join(process.cwd(), 'src/content/settings/general.json'),
@@ -15,17 +15,50 @@ const settings = JSON.parse(
 )
 
 const currentYear = new Date().getFullYear()
+const socialLinks: { label: string; url: string }[] = settings.social_links ?? []
 ---
 
-<footer class="border-t border-border py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-6xl mx-auto text-center">
+<footer class="border-t border-border py-8 sm:py-12 px-4 sm:px-6 lg:px-8" role="contentinfo">
+  <div class="max-w-6xl mx-auto text-center space-y-4">
     {settings.tagline && (
       <p class="text-text-muted mb-3 text-sm sm:text-base">
         {settings.tagline}
       </p>
     )}
+
+    {socialLinks.length > 0 && (
+      <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+        {socialLinks.map((link) => (
+          <li>
+            <a href={link.url} class="text-sm text-text-muted/70 transition-colors duration-200"
+               target="_blank" rel="noopener noreferrer">
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {settings.contact_email && (
+      <p>
+        <a href={`mailto:${settings.contact_email}`}
+           class="text-sm text-text-muted/70 transition-colors duration-200">
+          {settings.contact_email}
+        </a>
+      </p>
+    )}
+
     <p class="text-text-muted/70 text-sm">
-      &copy; {currentYear} {settings.site_title}. All rights reserved.
+      &copy; {currentYear} {settings.site_title}. {settings.copyright || 'All rights reserved.'}
     </p>
   </div>
 </footer>
+
+<style>
+  @media (hover: hover) {
+    footer a:hover {
+      color: var(--color-text);
+      text-decoration: none;
+    }
+  }
+</style>

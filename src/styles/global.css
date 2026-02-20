@@ -9,6 +9,10 @@
   /* Primary brand color - customize per brand */
   --color-primary: #3B82F6;
 
+  /* Accent colors - customize for secondary brand colours */
+  --color-accent-1: #8B5CF6;
+  --color-accent-2: #EC4899;
+
   /* Background colors */
   --color-background: #0F172A;
   --color-surface: #1E293B;
@@ -28,6 +32,8 @@
 @theme {
   /* Colors mapped from CSS variables */
   --color-primary: var(--color-primary);
+  --color-accent-1: var(--color-accent-1);
+  --color-accent-2: var(--color-accent-2);
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
   --color-text: var(--color-text);
@@ -69,6 +75,21 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+/**
+ * Reduced Motion
+ * Disable transitions, animations, and smooth scroll for users who prefer reduced motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

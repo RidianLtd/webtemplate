@@ -1,0 +1,9 @@
+name = "your-project-name"
+pages_build_output_dir = "dist"
+
+# Create a KV namespace for form submissions:
+#   npx wrangler kv namespace create FORM_SUBMISSIONS
+# Then paste the binding here:
+# [[kv_namespaces]]
+# binding = "FORM_SUBMISSIONS"
+# id = "YOUR_KV_NAMESPACE_ID"

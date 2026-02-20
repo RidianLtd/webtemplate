@@ -262,8 +262,36 @@ After initial setup, you can add a custom domain:
 4. Add the DNS records Cloudflare provides
 5. Update your GitHub OAuth App URLs to use the new domain
 
+## Editorial Workflow
+
+The CMS is configured with `publish_mode: editorial_workflow`, which means content changes create draft pull requests on GitHub instead of committing directly to the main branch. This prevents accidental publishes and enables review before content goes live.
+
+Editors will see "Draft", "In Review", and "Ready" columns in the CMS. Moving content to "Ready" and publishing merges the PR.
+
+## Contact Form Handler
+
+The template includes a working form API at `/api/enquiry`. To enable it:
+
+1. Create a KV namespace: `npx wrangler kv namespace create FORM_SUBMISSIONS`
+2. Add the namespace binding to `wrangler.toml`
+3. Set `SITE_ORIGIN` env var in Cloudflare Pages to your production URL
+
+See [Form Submission](form-submission.md) for full details.
+
+## PostHog Analytics
+
+PostHog is pre-wired but inactive. To activate:
+
+1. Sign up at [posthog.com](https://posthog.com) and create a project
+2. Open `src/layouts/BaseLayout.astro`
+3. Replace `PLACEHOLDER` with your PostHog project API key
+
+No tracking data is sent until you replace the placeholder. See [Analytics](analytics.md) for the full event reference.
+
 ## Next Steps
 
 - [Customize brand identity](customization.md)
 - [Add a blog collection](adding-collections.md)
 - [Understand the architecture](architecture.md)
+- [Set up form submissions](form-submission.md)
+- [Configure analytics](analytics.md)

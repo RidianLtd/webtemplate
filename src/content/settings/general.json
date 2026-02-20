@@ -1,5 +1,8 @@
 {
   "site_title": "My Website",
   "tagline": "A modern website template",
-  "default_description": "A website built with Astro, Decap CMS, and Cloudflare Pages."
+  "default_description": "A website built with Astro, Decap CMS, and Cloudflare Pages.",
+  "contact_email": "contact@example.com",
+  "copyright": "All rights reserved.",
+  "social_links": []
 }

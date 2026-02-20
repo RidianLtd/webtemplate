@@ -4,6 +4,11 @@
  * Provides the foundational HTML, head tags, and document setup
  */
 import '../styles/global.css'
+import '@fontsource/inter/300.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
 
 interface Props {
   title: string
@@ -22,6 +27,7 @@ const siteUrl = 'https://example.com'
     <meta name="description" content={description} />
     <title>{title}</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- Open Graph / Social Sharing -->
     <meta property="og:type" content="website" />
@@ -36,15 +42,105 @@ const siteUrl = 'https://example.com'
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`${siteUrl}/og-image.jpg`} />
 
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- PostHog Analytics — replace PLACEHOLDER with your project API key to activate -->
+    <script is:inline>
+      !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing startSessionRecording stopSessionRecording sessionRecordingStarted isFeatureEnabled onFeatureFlags onSessionId getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on off onSurvey getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSurvey getSurveyResponse".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+
+      var POSTHOG_API_KEY = 'PLACEHOLDER';
+      if (POSTHOG_API_KEY !== 'PLACEHOLDER') {
+        posthog.init(POSTHOG_API_KEY, {
+          api_host: 'https://us.i.posthog.com',
+          persistence: 'localStorage+cookie',
+          capture_pageview: true,
+          capture_pageleave: true,
+          autocapture: true,
+          enable_recording_console_log: false
+        });
+
+        // Track campaign parameters
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          var ref = params.get('ref');
+          var src = params.get('src');
+          var utm_source = params.get('utm_source');
+          var utm_medium = params.get('utm_medium');
+          var utm_campaign = params.get('utm_campaign');
+          if (ref) { posthog.identify(ref); }
+          var props = {};
+          if (src) props.src = src;
+          if (utm_source) props.utm_source = utm_source;
+          if (utm_medium) props.utm_medium = utm_medium;
+          if (utm_campaign) props.utm_campaign = utm_campaign;
+          if (Object.keys(props).length > 0) { posthog.register(props); }
+        })();
+      }
+    </script>
   </head>
   <body class="min-h-screen">
     <slot />
+
+    <!-- Behavioral tracking: section views, scroll depth, CTA clicks, outbound links, page time -->
+    <script is:inline>
+      (function() {
+        if (!window.posthog || !window.posthog.capture) return;
+
+        // Section views — fires when 30% of a section is visible
+        var sectionsSeen = {};
+        var sections = document.querySelectorAll('section[id]');
+        if (sections.length && window.IntersectionObserver) {
+          var sectionObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (!entry.isIntersecting) return;
+              var id = entry.target.id || 'unknown';
+              if (sectionsSeen[id]) return;
+              sectionsSeen[id] = true;
+              window.posthog.capture('section_viewed', { section: id });
+            });
+          }, { threshold: 0.3 });
+          sections.forEach(function(s) { sectionObserver.observe(s); });
+        }
+
+        // Scroll depth — fires at 25%, 50%, 75%, 100%
+        var scrollThresholds = { 25: false, 50: false, 75: false, 100: false };
+        window.addEventListener('scroll', function() {
+          var scrollTop = window.scrollY;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          if (docHeight <= 0) return;
+          var pct = Math.round((scrollTop / docHeight) * 100);
+          [25, 50, 75, 100].forEach(function(t) {
+            if (pct >= t && !scrollThresholds[t]) {
+              scrollThresholds[t] = true;
+              window.posthog.capture('scroll_depth', { depth: t });
+            }
+          });
+        }, { passive: true });
+
+        // CTA clicks — internal anchor links
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a[href^="#"]');
+          if (!link) return;
+          var href = link.getAttribute('href');
+          var text = link.textContent.trim();
+          var section = link.closest('section');
+          var from = section ? (section.id || 'unknown') : 'nav';
+          window.posthog.capture('cta_clicked', { href: href, text: text, from_section: from });
+        });
+
+        // Outbound links — external links opening in new tab
+        document.addEventListener('click', function(e) {
+          var link = e.target.closest('a[target="_blank"]');
+          if (!link) return;
+          window.posthog.capture('outbound_click', { url: link.href, text: link.textContent.trim() });
+        });
+
+        // Page time — fires when user navigates away
+        var pageStart = Date.now();
+        document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState === 'hidden') {
+            window.posthog.capture('page_time', { seconds: Math.round((Date.now() - pageStart) / 1000) });
+          }
+        });
+      })();
+    </script>
   </body>
 </html>

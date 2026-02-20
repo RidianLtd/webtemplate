@@ -21,11 +21,17 @@ Visit `http://localhost:4321` to see your site. For CMS access during developmen
 ## Features
 
 - **Astro 5.x** - Static site generation with zero JavaScript by default
-- **Decap CMS** - Visual content editor for non-technical users
+- **Decap CMS** - Visual content editor with editorial workflow (draft/review/publish)
 - **GitHub OAuth** - Secure authentication for private repositories
 - **Cloudflare Pages** - Global edge deployment with automatic SSL
 - **Tailwind CSS** - Utility-first styling with CSS custom properties for theming
 - **TypeScript** - Type-safe development with strict mode
+- **Testing** - Vitest for unit/integration tests, Playwright for e2e
+- **Security Headers** - X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **PostHog Analytics** - Opt-in behavioral tracking (section views, scroll depth, CTA clicks)
+- **Contact Form** - Cloudflare Pages Function with KV storage and optional Google Sheets webhook
+- **Self-hosted Fonts** - Inter via @fontsource for privacy and performance
+- **Accessibility** - Skip-to-content link, heading hierarchy, ARIA roles, reduced-motion support
 
 ## Prerequisites
 
@@ -45,24 +51,35 @@ Before deploying, you will need:
 | [Adding Collections](docs/adding-collections.md) | How to add a blog or other content types |
 | [OAuth Troubleshooting](docs/oauth-troubleshooting.md) | Common authentication issues |
 | [Deployment](docs/deployment.md) | Cloudflare Pages configuration |
+| [Form Submission](docs/form-submission.md) | Contact form setup and customisation |
+| [Analytics](docs/analytics.md) | PostHog setup and event reference |
 
 ## Project Structure
 
 ```
 /
 ├── public/
-│   └── admin/           # Decap CMS admin interface
+│   ├── admin/           # Decap CMS admin interface
+│   ├── _headers         # Cloudflare security headers
+│   ├── robots.txt       # Search engine directives
+│   └── sitemap.xml      # Site map
 ├── src/
 │   ├── components/      # Reusable UI components
 │   ├── content/         # CMS-managed content
 │   │   ├── homepage/    # Homepage content (JSON)
 │   │   ├── pages/       # Dynamic pages (Markdown)
 │   │   └── settings/    # Site settings (JSON)
-│   ├── layouts/         # Page layouts
+│   ├── layouts/         # Page layouts (includes PostHog)
 │   ├── pages/           # Route-based pages
-│   └── styles/          # Global styles and design tokens
+│   ├── styles/          # Global styles and design tokens
+│   └── utils/           # Markdown rendering, accent colors
+├── functions/
+│   └── api/             # Cloudflare Pages Functions
+│       └── enquiry.ts   # Contact form handler
+├── tests/               # Vitest integration tests
 ├── oauth-worker/        # Cloudflare Worker for GitHub OAuth
-└── docs/                # Documentation
+├── docs/                # Documentation
+└── wrangler.toml        # Cloudflare Pages config
 ```
 
 ## Technology Stack
@@ -74,7 +91,9 @@ Before deploying, you will need:
 | CMS | Decap CMS | Content management |
 | Hosting | Cloudflare Pages | Edge deployment |
 | Auth | GitHub OAuth | CMS authentication |
-| CI/CD | GitHub Actions | Automated deployment |
+| CI/CD | GitHub Actions | Automated deployment with PR previews |
+| Analytics | PostHog | Behavioral tracking (opt-in) |
+| Testing | Vitest + Playwright | Unit, integration, and e2e tests |
 
 ## Commands
 
@@ -84,6 +103,8 @@ Before deploying, you will need:
 | `npm run dev` | Start development server at `localhost:4321` |
 | `npm run build` | Build production site to `./dist/` |
 | `npm run preview` | Preview production build locally |
+| `npm test` | Run integration tests |
+| `npm run test:watch` | Run tests in watch mode |
 | `npx decap-server` | Start local CMS backend |
 
 ## License
